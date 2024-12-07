@@ -595,9 +595,15 @@ unsigned op16_on_node(register struct node *r, const char *op, const char *op2, 
 	switch(r->op) {
 	case T_LSTORE:
 	case T_LREF:
-	case T_LDEREF:
 		off = make_local_ptr(v + off, 254);
 		op16_on_ptr(op, op2, off);
+		break;
+	case T_LDEREF:
+		off = make_local_ptr(v + off, 254);
+		printf("\tldx %u,x\n", off);
+		invalidate_x();
+		v = r->val2;
+		op16_on_ptr(op, op2, v);
 		break;
 	case T_CONSTANT:
 		printf("\t%sb #<%u\n", op, (v + off) & 0xFFFF);
